@@ -40,12 +40,13 @@ class JqdataDatafeed(BaseDatafeed):
 
         # 查询数据
         tq_symbol = jqdatasdk.normalize_code(req.symbol)
-
+        print(f'查询历史数据：{tq_symbol}, {req}')
         df = jqdatasdk.get_price(
             security=tq_symbol,
             frequency=INTERVAL_VT2RQ.get(req.interval),
             start_date=req.start,
-            end_date=(req.end + timedelta(1))
+            end_date=(req.end + timedelta(1)),
+            panel=False
         )
 
         jqdatasdk.logout()
@@ -67,9 +68,10 @@ class JqdataDatafeed(BaseDatafeed):
                     low_price=tp.low,
                     close_price=tp.close,
                     volume=tp.volume,
-                    open_interest=tp.open_interest,
+                    open_interest=0,
                     gateway_name="JQ",
                 )
                 bars.append(bar)
-
+        else:
+            print(f'查询不到历史数据：{tq_symbol}')
         return bars
