@@ -13,7 +13,7 @@
 
 ## 说明
 
-基于tushare模块的1.2.64版本开发，支持以下中国金融市场的K线数据：
+基于jqdatasdk的vnpy从初始化数据插件
 
 * 期货：
   * CFFEX：中国金融期货交易所
@@ -48,8 +48,8 @@ python setup.py install
 
 在vn.py中使用JQData时，需要在全局配置中填写以下字段信息：
 
-|名称|含义|必填|举例|
-|---------|----|---|---|
-|datafeed.name|名称|是|tushare|
-|datafeed.username|用户名|是|手机号|
-|datafeed.password|密码|是|注册密码|
+|名称|含义|必填| 举例     |
+|---------|----|---|--------|
+|datafeed.name|名称|是| jqdata |
+|datafeed.username|用户名|是| 手机号    |
+|datafeed.password|密码|是| 注册密码   |
