@@ -12,13 +12,17 @@ from vnpy.trader.constant import Interval
 from vnpy.trader.object import BarData, HistoryRequest
 
 
-INTERVAL_VT2RQ = {
+INTERVAL_VT2JQ = {
     Interval.MINUTE: "1m",
     Interval.HOUR: "60m",
     Interval.DAILY: "1d",
 }
 
 CHINA_TZ = timezone("Asia/Shanghai")
+
+index_convert = {
+    '000852.SSE': '000852.XSHG',
+}
 
 
 class JqdataDatafeed(BaseDatafeed):
@@ -39,17 +43,24 @@ class JqdataDatafeed(BaseDatafeed):
             return None
 
         # 查询数据
-        tq_symbol = jqdatasdk.normalize_code(req.symbol)
+        if str(req.symbol).startswith('99'):
+            # 上交所指数
+            vt_symbol = '00' + req.symbol[2:]
+            tq_symbol = vt_symbol + '.XSHG'
+        elif req.vt_symbol in index_convert:
+            tq_symbol = index_convert[req.vt_symbol]
+        else:
+            vt_symbol = req.symbol
+            tq_symbol = jqdatasdk.normalize_code(vt_symbol)
         print(f'查询历史数据：{tq_symbol}, {req}')
         df = jqdatasdk.get_price(
             security=tq_symbol,
-            frequency=INTERVAL_VT2RQ.get(req.interval),
+            frequency=INTERVAL_VT2JQ.get(req.interval),
             start_date=req.start,
-            end_date=(req.end + timedelta(1)),
+            end_date=(req.end + timedelta(minutes=1)),
             panel=False
         )
 
-        jqdatasdk.logout()
         # 解析数据
         bars: List[BarData] = []
 
